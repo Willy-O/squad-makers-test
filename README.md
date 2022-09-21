@@ -1,7 +1,13 @@
 # This is the squareMakers test with fastapi
 
-In this session we're going to see how to run this project
+## About the project
 
+This is a squareMakers test using fastapi for create an api
+
+### Strucure
+
+
+## How to run this project
 ### Python requirets
 
 * Clone this repositorie
