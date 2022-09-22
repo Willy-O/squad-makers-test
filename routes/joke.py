@@ -15,6 +15,10 @@ router = APIRouter(
 class NewJoke(BaseModel):
   text: str = Field(...)
 
+class UpdateJoke(BaseModel):
+  text: str = Field(...)
+  number: int = Field(...)
+
 def make_request(url: str, type_joke:str ='')-> dict:
   try:
     response = requests.get(url, headers={"Accept": "application/json"})
@@ -85,6 +89,36 @@ async def post_myself(data: NewJoke):
       detail="error insertting myself jokes",
     )
 
-# POST: guardará en una base de datos el chiste (texto pasado por parámetro) ✅
-# UPDATE: actualiza el chiste con el nuevo texto sustituyendo al chiste indicado en el parámetro “number” 
-# DELETE: elimina el chiste indicado en el parametro number.
+@router.put("/")
+async def put_myself(data: UpdateJoke):
+  obj_joke = Joke()
+  try:
+    obj_joke.update_one(data.text, data.number)
+    return {
+      "detail": "success",
+      "results": "update successful"
+    }
+  except Exception as e:
+    print(type(e))
+    print(e)
+    raise HTTPException(
+      status_code=400,
+      detail="error updating myself jokes",
+    )
+
+@router.delete("/")
+async def put_myself(id: int = Query(...)):
+  obj_joke = Joke()
+  try:
+    obj_joke.delete_one(id)
+    return {
+      "detail": "success",
+      "results": "delete successful"
+    }
+  except Exception as e:
+    print(type(e))
+    print(e)
+    raise HTTPException(
+      status_code=400,
+      detail="error deleting myself jokes",
+    )
