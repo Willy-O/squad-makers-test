@@ -30,9 +30,15 @@ class Joke(Conexion):
       print(e)
       raise
 
-  def update_one(self, data):
+  def update_one(self, text, number):
     try:
-      self.db.joke.update_one(data)
+      self.db.joke.update_one({
+        'number': number
+      },{
+        '$set':{
+          'text': text
+        }
+      })
       return True
     except Exception as e:
       print(e)
@@ -40,7 +46,7 @@ class Joke(Conexion):
 
   def delete_one(self, id):
     try:
-      self.db.joke.delete_one({})
+      a= self.db.joke.delete_one({'number': id})
       return True
     except Exception as e:
       print(e)
