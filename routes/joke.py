@@ -1,12 +1,19 @@
 import json
 from random import randint
+from typing import Dict
 
 import requests
 from fastapi import APIRouter, Query, HTTPException
+from pydantic import BaseModel, Field
+
+from db.models.joke import Joke
 
 router = APIRouter(
   prefix="/joke",
 )
+
+class NewJoke(BaseModel):
+  text: str = Field(...)
 
 def make_request(url: str, type_joke:str ='')-> dict:
   try:
@@ -14,7 +21,7 @@ def make_request(url: str, type_joke:str ='')-> dict:
     data = response.json()
     return {
       "detail": "success",
-      "result": data
+      "results": data
       }
   except Exception as e:
     print(type(e))
@@ -45,22 +52,39 @@ async def get_random(type: str = Query(None)):
       request_url = dad_url
     return make_request(request_url)
 
+@router.get("/myself")
+async def get_myself():
+  obj_joke = Joke()
+  try:
+    data = obj_joke.get_all()
+    return {
+      "detail": "success",
+      "results": data
+    }
+  except Exception as e:
+    print()
+    raise HTTPException(
+      status_code=400,
+      detail="error getting myself jokes",
+    )
 
+@router.post("/")
+async def post_myself(data: NewJoke):
+  obj_joke = Joke()
+  try:
+    obj_joke.insert_one(data.parse_obj(data).dict())
+    return {
+      "detail": "success",
+      "results": "save successful"
+    }
+  except Exception as e:
+    print(type(e))
+    print(e)
+    raise HTTPException(
+      status_code=400,
+      detail="error insertting myself jokes",
+    )
 
-
-# se envía el path param habrá que comprobar si tiene el valor “Chuck” o el valor “Dad” ✅
-# devolverá un chiste aleatorio si no se pasa ningún path param. ✅
-# si tiene el valor “Chuck” se conseguirá el chiste de este API ✅
-# si tiene el valor “Dad” se conseguirá del API ✅
-# en caso de que el valor no sea ninguno de esos dos se devolverá el error correspondiente. ✅
-
-# POST: guardará en una base de datos el chiste (texto pasado por parámetro)
-# UPDATE: actualiza el chiste con el nuevo texto sustituyendo al chiste indicado en el parámetro “number”
+# POST: guardará en una base de datos el chiste (texto pasado por parámetro) ✅
+# UPDATE: actualiza el chiste con el nuevo texto sustituyendo al chiste indicado en el parámetro “number” 
 # DELETE: elimina el chiste indicado en el parametro number.
-
-
-# fetch('https://icanhazdadjoke.com/',{
-#     headers: {
-#       'Content-Type': 'application/json'
-#     },
-# }).then(e=>e.json()).then(console.log).catch(console.error)
