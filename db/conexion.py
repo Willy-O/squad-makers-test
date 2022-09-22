@@ -7,6 +7,7 @@ DB_CONNECTION = 'mongodb://localhost:27017'
 class Conexion():
   def __init__(self):
     self.client = MongoClient(DB_CONNECTION)
+    self.db = self.client.squadMakers
 
   def create_database(self):
     try:
@@ -14,8 +15,8 @@ class Conexion():
       if "squadMakers" in dblist:
         return "The database exists."
       else:
-        self.db = self.client["squadMakers"]
-        collection = self.db["joke"]
+        db = self.client["squadMakers"]
+        collection = db["joke"]
         collection.insert_one({
           "number": 1,
           "text": "joke example",
